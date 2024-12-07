@@ -21,7 +21,7 @@ class CandidateLevel(str, enum.Enum):
     SENIOR = 'senior'
 
 class GenerateReviewRequestScheme(BaseModel):
-    assignement_description: str
+    assignment_description: str
     github_repo_url: str
     candidate_level: CandidateLevel
 
@@ -46,7 +46,7 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
         return GenerateReviewReponseScheme(error='Total repo files size is too big. Max size is 1MB')
 
     try:
-        review = get_review(repo_files_data, data.assignement_description, data.candidate_level)
+        review = get_review(repo_files_data, data.assignment_description, data.candidate_level)
     except Exception as e:
         return GenerateReviewReponseScheme(error=str(e))
 
