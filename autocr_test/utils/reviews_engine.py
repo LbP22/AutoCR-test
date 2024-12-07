@@ -38,6 +38,6 @@ def get_review(repo_files_data: list[RepoFileModel], assignment_description : st
     for chunk in stream:
         if chunk.choices[0].delta.content is not None:
             review += chunk.choices[0].delta.content
-            print(chunk.choices[0].delta.content, end="")
+            # print(chunk.choices[0].delta.content, end="")
 
     return review
