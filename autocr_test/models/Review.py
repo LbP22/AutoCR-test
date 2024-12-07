@@ -8,4 +8,4 @@ class FileForReview(Model):
     file_type: RepoFileType
 
     file_content: Optional[str] = None
-    included_files: Optional[str] = None
+    included_files: Optional[list] = None
