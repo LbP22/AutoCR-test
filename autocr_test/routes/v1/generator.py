@@ -31,6 +31,7 @@ class GenerateReviewReponseScheme(BaseModel):
 
 @router.version(1).post("/generate_review")
 async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewReponseScheme:
+    """Analyze repo and provide the review"""
     repo_url_parts = data.github_repo_url.split('github.com/')
     repo =  repo_url_parts[1]
     url = f"https://api.github.com/repos/{repo}/contents"

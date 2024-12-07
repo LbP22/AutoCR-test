@@ -15,6 +15,7 @@ from ..utils.config import Environment, config
 from ..utils.router_helper import ApiRouterHelper
 
 def register_helper_routes():
+    """Register routes from the routes module"""
     route_versions_list = [module for _, module in inspect.getmembers(routes, lambda x: isinstance(x, ModuleType))]
     for version in route_versions_list:
         routes_list = [module for _, module in inspect.getmembers(version, lambda x: isinstance(x, ModuleType))]
@@ -42,5 +43,5 @@ app.add_middleware(
 register_helper_routes()
 
 def start():
-    # For poetry run
+    """For poetry run"""
     uvicorn.run("autocr_test.entrypoints.server:app", host="0.0.0.0", port=8000, reload=True)

@@ -4,6 +4,7 @@ from autocr_test.models.RepoFile import RepoFileModel, RepoFileType
 from ..utils.config import config
 
 async def get_files_list(url: str) -> list[RepoFileModel]:
+    """Get files list from github repo"""
     repo_files_data_raw = []
     async with httpx.AsyncClient() as client:
         headers = {
@@ -34,6 +35,7 @@ async def get_files_list(url: str) -> list[RepoFileModel]:
     return repo_files_data
 
 async def get_file_content(url: str) -> str:
+    """Get file content from github repo"""
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         if response.status_code != 200:
