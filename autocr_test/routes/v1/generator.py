@@ -1,6 +1,5 @@
-import asyncio
 import enum
-import json
+import hashlib
 
 from pydantic import BaseModel
 
@@ -9,9 +8,7 @@ from ...utils.reviews_engine import get_review
 from ...utils.gh_engine import get_files_list
 from ...utils.red_engine import RedEngine
 from ...utils.router_helper import ApiRouterHelper
-import httpx
 from ...utils.config import config
-from ...models.RepoFile import RepoFileModel, RepoFileType
 
 router = ApiRouterHelper(path='generator', tags=['generator'])
 
@@ -40,6 +37,13 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
         repo_files_data = await get_files_list(url)
     except Exception as e:
         return GenerateReviewReponseScheme(error=str(e))
+    
+    repo_files_data_hashed = hashlib.md5(str(repo_files_data).encode()).hexdigest()
+    red_engine = RedEngine()
+    cached_data = await red_engine.get(repo_files_data_hashed)
+    if cached_data:
+        print('Cache hit!', repo_files_data_hashed)
+        return GenerateReviewReponseScheme(review=cached_data.decode())
 
     total_data_size = sum([x.size for x in repo_files_data])
     if total_data_size > config.REPO_SIZE_LIMIT:
@@ -49,5 +53,7 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
         review = get_review(repo_files_data, data.assignment_description, data.candidate_level)
     except Exception as e:
         return GenerateReviewReponseScheme(error=str(e))
-
+    
+    await red_engine.set(repo_files_data_hashed, review, expire=config.REPO_CACHE_TTL)
+    print('Cache miss! Created new: ', repo_files_data_hashed)
     return GenerateReviewReponseScheme(review=review)

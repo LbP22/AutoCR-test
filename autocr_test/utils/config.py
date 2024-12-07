@@ -13,7 +13,9 @@ class Environment(str, enum.Enum):
 class Config(BaseSettings):
     ENV: Environment = Environment.LOCAL
     PYTHONPATH: str = '.' # Only for local
+
     REDIS_URL: str = 'redis://localhost:6379'
+    REPO_CACHE_TTL: int = 60 * 60 * 24  # day
 
     REPO_SIZE_LIMIT: int = 1000000
 
