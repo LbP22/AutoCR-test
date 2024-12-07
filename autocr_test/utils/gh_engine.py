@@ -4,6 +4,31 @@ import httpx
 from autocr_test.models.RepoFile import RepoFileModel, RepoFileType
 from ..utils.config import config
 
+class GithubRateLimitException(Exception):
+    pass
+
+class GithubRepoNotFoundException(Exception):
+    pass
+
+class GithubBadCredentialsException(Exception):
+    pass
+
+exceptions = {
+    401: GithubBadCredentialsException,
+    404: GithubRepoNotFoundException,
+    403: GithubRateLimitException,
+    429: GithubRateLimitException
+}
+
+def get_github_exception(status_code):
+    return exceptions.get(status_code, Exception)
+
+def get_github_exception_status_code(exception):
+    for status_code, exception_type in exceptions.items():
+        if isinstance(exception, exception_type):
+            return status_code
+    return 500
+
 @backoff.on_exception(backoff.constant, ValueError, interval=1, max_tries=5)
 async def get_files_list(url: str) -> list[RepoFileModel]:
     """Get files list from github repo"""
@@ -15,7 +40,7 @@ async def get_files_list(url: str) -> list[RepoFileModel]:
         }
         response = await client.get(url, headers=headers)
         if response.status_code != 200:
-            raise Exception(f'Error fetching github repo files. Status code: {response.status_code}\nMessage: '+response.text)
+            raise get_github_exception(response.status_code)(response.text)
         repo_files_data_raw = response.json()
 
     repo_files_data = [RepoFileModel(**x) for x in repo_files_data_raw]
@@ -36,12 +61,12 @@ async def get_files_list(url: str) -> list[RepoFileModel]:
 
     return repo_files_data
 
+
 @backoff.on_exception(backoff.constant, ValueError, interval=1, max_tries=5)
 async def get_file_content(url: str) -> str:
     """Get file content from github repo"""
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         if response.status_code != 200:
-            print('Error fetching file content: '+response.text)
-            return ''
+            raise get_github_exception(response.status_code)(response.text)
         return response.text
