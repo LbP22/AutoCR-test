@@ -15,8 +15,8 @@ class Config(BaseSettings):
     PYTHONPATH: str = '.' # Only for local
     REDIS_URL: str = 'redis://localhost:6379'
 
-    GITHUB_TOKEN: str = 'test'
-    OPENAI_API_KEY: str = 'test'
+    GITHUB_TOKEN: str
+    OPENAI_API_KEY: str
 
     class Config:
         env_file = ".env"

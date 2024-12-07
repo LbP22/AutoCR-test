@@ -1,5 +1,5 @@
 import enum
-from typing import Union
+from typing import Optional
 from odmantic import Model
 
 class RepoFileType(str, enum.Enum):
@@ -15,7 +15,7 @@ class RepoFileModel(Model):
     html_url: str
     git_url: str
     type: RepoFileType
-    download_url: Union[str, None]
+    download_url: Optional[str]
 
-    files: Union[list, None] = None
-    content: Union[str, None] = None
+    files: Optional[str]
+    content: Optional[str]

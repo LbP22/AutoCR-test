@@ -42,5 +42,5 @@ app.add_middleware(
 register_helper_routes()
 
 def start():
-    """Launched with `poetry run start` at root level"""
+    # For poetry run
     uvicorn.run("autocr_test.entrypoints.server:app", host="0.0.0.0", port=8000, reload=True)

@@ -12,7 +12,7 @@ async def get_files_list(url: str) -> list[RepoFileModel]:
         }
         response = await client.get(url, headers=headers)
         if response.status_code != 200:
-            raise Exception('Error fetching repo files: '+response.text)
+            raise Exception(f'Error fetching github repo files. Status code: {response.status_code}\nMessage: '+response.text)
         repo_files_data_raw = response.json()
 
     repo_files_data = [RepoFileModel(**x) for x in repo_files_data_raw]

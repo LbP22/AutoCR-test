@@ -1,4 +1,5 @@
 # AutoCR-test
+Backend repo of an automatic code review application
 
 ## Docker containers setup
 bash autocr_test/inventory/run.sh

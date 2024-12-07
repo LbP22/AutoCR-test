@@ -1,5 +1,4 @@
-import enum
-from typing import Union
+from typing import Optional
 from odmantic import Model
 
 from autocr_test.models.RepoFile import RepoFileType
@@ -8,5 +7,5 @@ class FileForReview(Model):
     file_name: str
     file_type: RepoFileType
 
-    file_content: Union[str, None] = None
-    included_files: Union[list, None] = None
+    file_content: Optional[str]
+    included_files: Optional[str]
