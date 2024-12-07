@@ -26,6 +26,7 @@ class GenerateReviewRequestScheme(BaseModel):
 class GenerateReviewReponseScheme(BaseModel):
     review: str = None
     error: str = None
+    cache_hit: bool = False
 
 @router.version(1).post("/generate_review")
 @backoff.on_exception(backoff.constant, ValueError, interval=1, max_tries=5)
@@ -42,7 +43,7 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
     
     cached_data = await get_cache(repo_files_data, assignment=data.assignment_description)
     if cached_data:
-        return GenerateReviewReponseScheme(review=cached_data)
+        return GenerateReviewReponseScheme(review=cached_data, cache_hit=True)
 
     try:
         review = get_review(repo_files_data, data.assignment_description, data.candidate_level)
