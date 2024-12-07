@@ -16,9 +16,9 @@ from ...models.RepoFile import RepoFileModel, RepoFileType
 router = ApiRouterHelper(path='generator', tags=['generator'])
 
 class CandidateLevel(str, enum.Enum):
-    JUNIOR = 'j'
-    MIDDLE = 'm'
-    SENIOR = 's'
+    JUNIOR = 'junior'
+    MIDDLE = 'middle'
+    SENIOR = 'senior'
 
 class GenerateReviewRequestScheme(BaseModel):
     assignement_description: str
@@ -37,4 +37,4 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
     repo_files_data = await get_files_list(url)
 
     print('Total repo size:', sum([x.size for x in repo_files_data])/1024, 'kb')
-    return GenerateReviewReponseScheme(review=await get_review(repo_files_data, data.assignement_description, data.candidate_level))
+    return GenerateReviewReponseScheme(review=get_review(repo_files_data, data.assignement_description, data.candidate_level))
