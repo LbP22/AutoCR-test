@@ -9,19 +9,19 @@ from openai import OpenAI
 
 client = OpenAI(api_key=config.OPENAI_API_KEY)
 
-def get_file_for_review(file: RepoFileModel) -> FileForReview:
+def convert_from_repo_file_to_file_for_review(file: RepoFileModel) -> FileForReview:
     return FileForReview(
         file_name=file.name,
         file_type=file.type,
         file_content=file.content,
-        included_files=[get_file_for_review(x) for x in file.files] if file.files else None
+        included_files=[convert_from_repo_file_to_file_for_review(x) for x in file.files] if file.files else None
     )
 
 def get_review(repo_files_data: list[RepoFileModel], assignement_description: str, candidate_level: RepoFileType) -> str:
     code_data_to_send: list[FileForReview] = []
 
     for file in repo_files_data:
-        code_data_to_send.append(get_file_for_review(file))
+        code_data_to_send.append(convert_from_repo_file_to_file_for_review(file))
     
     code_data_to_send_raw = [x.model_dump_json(exclude_none=True) for x in code_data_to_send]
     code_data_to_send_raw = json.dumps(code_data_to_send_raw)
