@@ -26,7 +26,8 @@ class GenerateReviewRequestScheme(BaseModel):
     candidate_level: CandidateLevel
 
 class GenerateReviewReponseScheme(BaseModel):
-    review: str
+    review: str = None
+    error: str = None
 
 @router.version(1).post("/generate_review")
 async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewReponseScheme:
@@ -34,7 +35,18 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
     repo =  repo_url_parts[1]
     url = f"https://api.github.com/repos/{repo}/contents"
 
-    repo_files_data = await get_files_list(url)
+    try:
+        repo_files_data = await get_files_list(url)
+    except Exception as e:
+        return GenerateReviewReponseScheme(error=str(e))
 
-    print('Total repo size:', sum([x.size for x in repo_files_data])/1024, 'kb')
-    return GenerateReviewReponseScheme(review=get_review(repo_files_data, data.assignement_description, data.candidate_level))
+    total_data_size = sum([x.size for x in repo_files_data])
+    if total_data_size > config.REPO_SIZE_LIMIT:
+        return GenerateReviewReponseScheme(error='Total repo files size is too big. Max size is 1MB')
+
+    try:
+        review = get_review(repo_files_data, data.assignement_description, data.candidate_level)
+    except Exception as e:
+        return GenerateReviewReponseScheme(error=str(e))
+
+    return GenerateReviewReponseScheme(review=review)

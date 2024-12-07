@@ -15,6 +15,8 @@ class Config(BaseSettings):
     PYTHONPATH: str = '.' # Only for local
     REDIS_URL: str = 'redis://localhost:6379'
 
+    REPO_SIZE_LIMIT: int = 1000000
+
     GITHUB_TOKEN: str
     OPENAI_API_KEY: str
 
