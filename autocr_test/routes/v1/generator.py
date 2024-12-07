@@ -1,5 +1,6 @@
 import enum
 
+import backoff
 from pydantic import BaseModel
 
 from autocr_test.utils.cache_engine import get_cache, set_cache
@@ -27,6 +28,7 @@ class GenerateReviewReponseScheme(BaseModel):
     error: str = None
 
 @router.version(1).post("/generate_review")
+@backoff.on_exception(backoff.constant, ValueError, interval=1, max_tries=5)
 async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewReponseScheme:
     """Analyze repo and provide the review"""
     repo_url_parts = data.github_repo_url.split('github.com/')
@@ -38,7 +40,7 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
     except Exception as e:
         return GenerateReviewReponseScheme(error=str(e))
     
-    cached_data = await get_cache(repo_files_data)
+    cached_data = await get_cache(repo_files_data, assignment=data.assignment_description)
     if cached_data:
         return GenerateReviewReponseScheme(review=cached_data)
 
@@ -47,5 +49,5 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
     except Exception as e:
         return GenerateReviewReponseScheme(error=str(e))
     
-    await set_cache(repo_files_data, review)
+    await set_cache(repo_files_data, data.assignment_description, review)
     return GenerateReviewReponseScheme(review=review)

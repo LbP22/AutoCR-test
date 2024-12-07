@@ -15,6 +15,7 @@ pydantic = "2.9.2"
 fastapi = "^0.115.6"
 uvicorn = {extras = ["standard"], version = "^0.32.1"}
 openai = "^1.57.0"
+backoff = "^2.2.1"
 
 
 [build-system]

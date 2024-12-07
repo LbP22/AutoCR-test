@@ -1,8 +1,10 @@
 import asyncio
+import backoff
 import httpx
 from autocr_test.models.RepoFile import RepoFileModel, RepoFileType
 from ..utils.config import config
 
+@backoff.on_exception(backoff.constant, ValueError, interval=1, max_tries=5)
 async def get_files_list(url: str) -> list[RepoFileModel]:
     """Get files list from github repo"""
     repo_files_data_raw = []
@@ -34,6 +36,7 @@ async def get_files_list(url: str) -> list[RepoFileModel]:
 
     return repo_files_data
 
+@backoff.on_exception(backoff.constant, ValueError, interval=1, max_tries=5)
 async def get_file_content(url: str) -> str:
     """Get file content from github repo"""
     async with httpx.AsyncClient() as client:
