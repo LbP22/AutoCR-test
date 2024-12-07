@@ -54,7 +54,9 @@ async def generate_review(data: GenerateReviewRequestScheme, resp: Response) -> 
     try:
         review = get_review(repo_files_data, data.assignment_description, data.candidate_level)
     except Exception as e:
-        return GenerateReviewReponseScheme(error=str(e))
+        exception_message = str(e)
+        resp.status_code = int(exception_message.split('Error code: ')[1].split(' - ')[0])
+        return GenerateReviewReponseScheme(error=exception_message)
     
     await set_cache(repo_files_data, data.assignment_description, review)
     return GenerateReviewReponseScheme(review=review)
