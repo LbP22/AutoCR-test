@@ -1,12 +1,12 @@
 import enum
-import hashlib
 
 from pydantic import BaseModel
+
+from autocr_test.utils.cache_engine import get_cache, set_cache
 
 from ...utils.reviews_engine import get_review
 
 from ...utils.gh_engine import get_files_list
-from ...utils.red_engine import RedEngine
 from ...utils.router_helper import ApiRouterHelper
 from ...utils.config import config
 
@@ -38,22 +38,14 @@ async def generate_review(data: GenerateReviewRequestScheme) -> GenerateReviewRe
     except Exception as e:
         return GenerateReviewReponseScheme(error=str(e))
     
-    repo_files_data_hashed = hashlib.md5(str(repo_files_data).encode()).hexdigest()
-    red_engine = RedEngine()
-    cached_data = await red_engine.get(repo_files_data_hashed)
+    cached_data = await get_cache(repo_files_data)
     if cached_data:
-        print('Cache hit!', repo_files_data_hashed)
-        return GenerateReviewReponseScheme(review=cached_data.decode())
-
-    total_data_size = sum([x.size for x in repo_files_data])
-    if total_data_size > config.REPO_SIZE_LIMIT:
-        return GenerateReviewReponseScheme(error='Total repo files size is too big. Max size is 1MB')
+        return GenerateReviewReponseScheme(review=cached_data)
 
     try:
         review = get_review(repo_files_data, data.assignment_description, data.candidate_level)
     except Exception as e:
         return GenerateReviewReponseScheme(error=str(e))
     
-    await red_engine.set(repo_files_data_hashed, review, expire=config.REPO_CACHE_TTL)
-    print('Cache miss! Created new: ', repo_files_data_hashed)
+    await set_cache(repo_files_data, review)
     return GenerateReviewReponseScheme(review=review)
