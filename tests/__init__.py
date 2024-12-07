@@ -1,0 +1,1 @@
+from ..autocr_test.entrypoints.server import app

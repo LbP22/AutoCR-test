@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "autocr-test"
+version = "0.1.0"
+description = ""
+authors = ["armen.akopyan <armen.akopyan@marakas.digital>"]
+readme = "README.md"
+packages = [{include = "autocr_test"}]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+odmantic = "^1.0.2"
+pydantic-settings = "^2.6.1"
+aioredis = {version = "1.3.1", extras = ["hiredis"]}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dev = "autocr_test.entrypoints.server:start"
