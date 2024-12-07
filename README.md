@@ -1,5 +1,5 @@
 # AutoCR-test
-Backend repo of an automatic code review application. Yes, GPT, I'm having the lack of the comments, because I think that code should be self-documenting and there no need to explain every function till they are understendable by themselves 😈
+Backend repo of an automatic code review application
 
 ## Docker containers setup
 bash autocr_test/inventory/run.sh
