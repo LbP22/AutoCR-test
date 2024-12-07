@@ -21,7 +21,7 @@ class Config(BaseSettings):
 
     GITHUB_TOKEN: str
     OPENAI_API_KEY: str
-    OPENAI_MODEL: str = 'gpt-4o-mini'
+    OPENAI_MODEL: str = 'gpt-4-turbo'
 
     class Config:
         env_file = ".env"
