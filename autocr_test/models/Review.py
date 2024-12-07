@@ -7,5 +7,5 @@ class FileForReview(Model):
     file_name: str
     file_type: RepoFileType
 
-    file_content: Optional[str]
-    included_files: Optional[str]
+    file_content: Optional[str] = None
+    included_files: Optional[str] = None

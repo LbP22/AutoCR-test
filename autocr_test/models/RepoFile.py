@@ -17,5 +17,5 @@ class RepoFileModel(Model):
     type: RepoFileType
     download_url: Optional[str]
 
-    files: Optional[str]
-    content: Optional[str]
+    files: Optional[str] = None
+    content: Optional[str] = None
