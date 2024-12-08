@@ -36,7 +36,7 @@ async def test_cache_miss():
 
     response = await client.post("api/v1/generator/generate_review", json={
         "assignment_description": "Test",
-        "github_repo_url": "htts://github.com/LbP22/AutoCR-test",
+        "github_repo_url": "https://github.com/LbP22/AutoCR-test",
         "candidate_level": "middle"
     })
     assert response.status_code == 200
